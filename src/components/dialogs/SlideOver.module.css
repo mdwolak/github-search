@@ -1,0 +1,10 @@
+.top-container {
+  @apply flex h-full flex-col overflow-y-scroll bg-white shadow-xl;
+}
+
+.container--divider {
+  @apply space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0;
+}
+.actions {
+  @apply flex border-t border-gray-200 px-4 py-5 sm:px-6;
+}

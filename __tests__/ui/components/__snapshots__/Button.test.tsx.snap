@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button Primary disabled 1`] = `
+<button
+  class="rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  disabled=""
+  type="button"
+>
+  Click
+</button>
+`;
+
+exports[`Button Primary icon only 1`] = `
+<button
+  class="inline-flex items-center rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 p-3.5 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 4.5v15m7.5-7.5h-15"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</button>
+`;
+
+exports[`Button Primary loading 1`] = `
+<button
+  class="inline-flex items-center rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  disabled=""
+  type="button"
+>
+  <svg
+    class="animate-spin mr-2 h-5 w-5"
+    data-testid="spinner"
+    fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      class="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      stroke-width="4"
+    />
+    <path
+      class="opacity-75"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      fill="currentColor"
+    />
+  </svg>
+  <span
+    class="sr-only"
+  >
+    Loading
+  </span>
+  <span>
+    Processing...
+  </span>
+</button>
+`;
+
+exports[`Button Primary text 1`] = `
+<button
+  class="rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  Click
+</button>
+`;
+
+exports[`Button Primary text and icon 1`] = `
+<button
+  class="inline-flex items-center rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="mr-2 h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 4.5v15m7.5-7.5h-15"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+  Click
+</button>
+`;
+
+exports[`secondary fullWidth 1`] = `
+<button
+  class="flex w-full justify-center rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  Click
+</button>
+`;
+
+exports[`secondary rounded 1`] = `
+<button
+  class="rounded-full font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  Click
+</button>
+`;
+
+exports[`secondary text 1`] = `
+<button
+  class="rounded-md font-medium shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 px-4 py-3 text-md bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 enabled:hover:bg-indigo-500"
+  type="button"
+>
+  Click
+</button>
+`;
