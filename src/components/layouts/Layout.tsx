@@ -147,25 +147,8 @@ const SidebarNav = () => {
   const { orgId } = router.query;
 
   const navigation = [
-    { name: "Organisations", href: "/org", icon: FolderIcon, current: true },
-    {
-      name: "Addresses",
-      href: `/org/${orgId}/addresses`,
-      icon: FolderIcon,
-      current: false,
-    },
-    {
-      name: "Activities",
-      href: `/org/${orgId}/activities`,
-      icon: FolderIcon,
-      current: false,
-    },
-    { name: "Schedules", href: "schedules", icon: FolderIcon, current: false },
+    { name: "Search", href: "search", icon: HomeIcon, current: false },
     { name: "Exemplars", href: "exemplars", icon: HomeIcon, current: false },
-    // { name: "Team", href: "#", icon: UsersIcon, current: false },
-    // { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-    // { name: "Documents", href: "#", icon: DocumentDuplicateIcon, current: false },
-    // { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
   ];
 
   return (

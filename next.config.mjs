@@ -17,7 +17,7 @@ const config = {
     return [
       {
         source: "/",
-        destination: "/clubs/exemplars",
+        destination: "/search",
         permanent: false,
       },
     ];
