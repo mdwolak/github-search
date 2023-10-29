@@ -1,16 +1,17 @@
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { Octokit } from "@octokit/rest";
-import { Octokit } from "@octokit/rest";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { z } from "zod";
 
-import { Link, toast } from "~/components/core";
+import { Button, Link, toast } from "~/components/core";
+import { Form, Input, ValidationSummary, useForm } from "~/components/forms";
 import { getLayout } from "~/components/layouts/Layout";
 import { api } from "~/utils/api";
 
@@ -20,7 +21,6 @@ interface User {
   login: string;
   followers?: number;
   following?: number;
-  //bio?: string;
   //bio?: string;
   type: string;
   avatar_url: string;
@@ -48,9 +48,6 @@ const columns = [
   // columnHelper.accessor("bio", {
   //   header: "Bio",
   // }),
-  // columnHelper.accessor("bio", {
-  //   header: "Bio",
-  // }),
   // Accessor Column
   columnHelper.accessor("type", {
     header: "Type",
@@ -73,35 +70,52 @@ const columns = [
   }),
 ];
 
+const searchParamsSchema = z.object({
+  location: z.string().optional(),
+  language: z.string().optional(),
+});
+type SearchParamsInput = z.infer<typeof searchParamsSchema>;
+
 const UserSearchList = () => {
   const router = useRouter();
-  const [location, setLocation] = useState(router.query.location?.[0] || "");
-  const [language, setLanguage] = useState(router.query.language?.[0] || "");
-  const [enabled, setEnabled] = useState(true);
 
-  const handleSearch = () => {
-    console.log({ location, language });
-    router.push({
-      query: {
-        ...router.query,
-        location,
-        language,
-      },
-    });
+  const location = (router.query.location as string) || "";
+  const language = (router.query.language as string) || "";
+
+  const form = useForm({
+    schema: searchParamsSchema,
+  });
+  const { setFocus } = form;
+
+  useEffect(() => {
+    setFocus("location");
+    const data = { location, language };
+    form.reset(data);
+  }, [location, language]);
+
+  const enabled = Boolean(location || language);
+
+  const handleSearch = (data: SearchParamsInput) => {
+    console.log(data);
+    if (enabled)
+      router.push({
+        query: {
+          ...router.query,
+          ...data,
+        },
+      });
   };
 
-  const {
-    data: users = [],
-    isLoading,
-    refetch: fetchUsers,
-  } = api.github.searchUsers.useQuery(
+  const { data: users = [], isLoading } = api.github.searchUsers.useQuery(
     { location, language },
     {
       select: (data) => data,
-      enabled: false && (!!location || !!language),
+      enabled,
       onError(error) {
         toast.error(error.message);
       },
+      staleTime: 60 * 60 * 1000,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -111,38 +125,35 @@ const UserSearchList = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  useEffect(() => {
-    console.log("fetching");
-    if (enabled) {
-      setEnabled(false);
-      fetchUsers();
-      console.log("fetched");
-    }
-  }, []);
-
-  console.log("Enabled", enabled);
-
   return (
     <>
-      <div>
-        <label htmlFor="">Location:</label>
-        <input
-          type="text"
-          id=""
-          defaultValue={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="language">Language:</label>
-        <input
-          type="text"
-          id="language"
-          defaultValue={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        />
-      </div>
-      <button onClick={handleSearch}>Search</button>
+      <Form
+        form={form}
+        handleSubmit={handleSearch}
+        className="flex h-full flex-col bg-white shadow-xl">
+        <div className="h-0 flex-1 overflow-y-auto">
+          {/* Content */}
+          <fieldset className="space-y-6 p-4 pt-6">
+            <ValidationSummary errors={form.formState.errors} />
+            {/* <ApiErrorMessage error={apiError} visible={form.formState.isValid} /> */}
+
+            <Input label="Location" {...form.register("location")} required />
+            <Input label="Language" {...form.register("language")} required />
+          </fieldset>
+          {/* /End Content */}
+        </div>
+
+        <div className="sm:px-6; flex border-t border-gray-200 px-4 py-5">
+          <Button
+            type="submit"
+            fullWidth
+            isLoading={isLoading && enabled}
+            disabled={!form.formState.isDirty}>
+            Save
+          </Button>
+        </div>
+      </Form>
+
       {isLoading ? (
         <div>Loading...</div>
       ) : (
