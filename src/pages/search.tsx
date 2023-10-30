@@ -71,6 +71,7 @@ const columns = [
 ];
 
 const searchParamsSchema = z.object({
+  query: z.string().optional(),
   location: z.string().optional(),
   language: z.string().optional(),
 });
@@ -79,6 +80,7 @@ type SearchParamsInput = z.infer<typeof searchParamsSchema>;
 const UserSearchList = () => {
   const router = useRouter();
 
+  const query = (router.query.query as string) || "";
   const location = (router.query.location as string) || "";
   const language = (router.query.language as string) || "";
 
@@ -89,9 +91,9 @@ const UserSearchList = () => {
 
   useEffect(() => {
     setFocus("location");
-    const data = { location, language };
+    const data = { query, location, language };
     form.reset(data);
-  }, [location, language]);
+  }, [query, location, language]);
 
   const enabled = Boolean(location || language);
 
@@ -107,9 +109,9 @@ const UserSearchList = () => {
   };
 
   const { data: users = [], isLoading } = api.github.searchUsers.useQuery(
-    { location, language },
+    { query, location, language },
     {
-      select: (data) => data,
+      select: (data) => data.items,
       enabled,
       onError(error) {
         toast.error(error.message);
@@ -137,8 +139,9 @@ const UserSearchList = () => {
             <ValidationSummary errors={form.formState.errors} />
             {/* <ApiErrorMessage error={apiError} visible={form.formState.isValid} /> */}
 
-            <Input label="Location" {...form.register("location")} required />
-            <Input label="Language" {...form.register("language")} required />
+            <Input label="Query" {...form.register("query")} />
+            <Input label="Location" {...form.register("location")} />
+            <Input label="Language" {...form.register("language")} />
           </fieldset>
           {/* /End Content */}
         </div>
