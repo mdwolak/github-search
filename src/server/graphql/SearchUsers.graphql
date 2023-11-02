@@ -1,0 +1,83 @@
+query SearchUsers($query: String!, $perPage: Int!, $after: String) {
+  search(type: USER, query: $query, first: $perPage, after: $after) {
+    userCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      ... on User {
+        avatarUrl
+        bio
+        # bioHTML
+        # company
+        # companyHTML
+        # createdAt
+        # email
+        # # enterprises() A list of enterprises that the user belongs to.
+        # estimatedNextSponsorsPayoutInCents
+        followers {
+          totalCount
+        }
+        # isHireable
+        # # Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
+        # # itemShowcase
+        # # location
+        login
+        # monthlyEstimatedSponsorsIncomeInCents
+        name
+        # # Verified email addresses that match verified domains for a specified organization the user is a member of.
+        # # organizationVerifiedDomainEmails(login: String!): [String!]!
+        # organizations(first: 100) {
+        #   nodes {
+        #     login
+        #     location
+        #   }
+        # }
+        # # A list of packages under the owner.
+        # packages(first: 100) {
+        #   totalCount
+        #   nodes {
+        #     name
+        #   }
+        # }
+        # pinnedItems {
+        #   totalCount
+        # }
+        # A list of projects under the owner.
+        # projects(first: 100) {
+        #   edges {
+        #     node {
+        #       name
+        #     }
+        #   }
+        # }
+        # pullRequests {
+        #   totalCount
+        # }
+        # repositories(
+        #   first: 100
+        #   isArchived: false
+        #   orderBy: { field: UPDATED_AT, direction: DESC }
+        # ) {
+        #   totalCount
+        #   totalDiskUsage
+        #   nodes {
+        #     name
+        #   }
+        # }
+        # socialAccounts(first: 100) {
+        #   nodes {
+        #     displayName
+        #     provider
+        #     url
+        #   }
+        # }
+        # twitterUsername
+        updatedAt
+        url
+        websiteUrl
+      }
+    }
+  }
+}
