@@ -95,28 +95,31 @@ const UserSearchList = () => {
     form.reset(data);
   }, [query, location, language]);
 
-  const enabled = Boolean(location || language);
+  const enabled = Boolean(location || language || query);
 
   const handleSearch = (data: SearchParamsInput) => {
     console.log(data);
-    if (enabled)
-      router.push({
-        query: {
-          ...router.query,
-          ...data,
-        },
-      });
+    router.push({
+      query: {
+        ...router.query,
+        ...data,
+      },
+    });
   };
 
   const { data: users = [], isLoading } = api.github.searchUsers.useQuery(
     { query, location, language },
     {
-      select: (data) => data.items,
+      select: (data) => data,
       enabled,
+      onSuccess(data) {
+        console.log(data);
+      },
       onError(error) {
         toast.error(error.message);
       },
-      staleTime: 60 * 60 * 1000,
+      //staleTime: 60 * 60 * 1000,
+      retry: false, //managed by octokit
       refetchOnWindowFocus: false,
     }
   );
