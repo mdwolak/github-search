@@ -19,13 +19,14 @@ import { api } from "~/utils/api";
 interface User {
   id: number;
   login: string;
-  followers?: number;
-  following?: number;
-  //bio?: string;
-  type: string;
-  avatar_url: string;
-  html_url: string;
+  followers?: { totalCount: number };
+  name: string;
+  bio?: string;
+  websiteUrl: string;
+  avatarUrl: string;
+  url: string;
 }
+
 const columnHelper = createColumnHelper<User>();
 const columns = [
   // Accessor Column
@@ -37,33 +38,32 @@ const columns = [
     header: "Login",
   }),
   // Accessor Column
-  columnHelper.accessor("followers", {
+  columnHelper.accessor("followers.totalCount", {
     header: "Followers",
   }),
   // Accessor Column
-  columnHelper.accessor("following", {
-    header: "Following",
+  columnHelper.accessor("name", {
+    header: "Name",
+  }),
+  columnHelper.accessor("bio", {
+    header: "Bio",
   }),
   // Accessor Column
-  // columnHelper.accessor("bio", {
-  //   header: "Bio",
-  // }),
-  // Accessor Column
-  columnHelper.accessor("type", {
-    header: "Type",
+  columnHelper.accessor("websiteUrl", {
+    header: "websiteUrl",
   }),
   // Accessor Column
-  columnHelper.accessor("avatar_url", {
+  columnHelper.accessor("avatarUrl", {
     header: "Avatar",
     cell: (props) => (
       <img className="inline-block h-14 w-14 rounded-md" src={props.getValue()} alt="avatar" />
     ),
   }),
   // Accessor Column
-  columnHelper.accessor("html_url", {
+  columnHelper.accessor("url", {
     header: "Repos",
     cell: (props) => (
-      <Link href={props.getValue()} target="_blank" rel="noreferrer">
+      <Link href={props.getValue() as string} target="_blank" rel="noreferrer">
         Repositories
       </Link>
     ),
@@ -110,7 +110,7 @@ const UserSearchList = () => {
   const { data: users = [], isLoading } = api.github.searchUsers.useQuery(
     { query, location, language },
     {
-      select: (data) => data,
+      select: (data) => data.nodes,
       enabled,
       onSuccess(data) {
         console.log(data);
