@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (token.role === "ADMIN") return NextResponse.next();
+  if (token.role === "Admin") return NextResponse.next();
 
   const { pathname } = req.nextUrl;
   const parts = pathname.split("/").filter(Boolean);

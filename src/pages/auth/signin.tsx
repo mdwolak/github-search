@@ -1,5 +1,5 @@
-import type { InferGetServerSidePropsType } from "next";
-import { signIn } from "next-auth/react";
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { getCsrfToken, signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import { Alert, Button, Link, SEOHead } from "~/components/core";
 import { Form, InputEmail, InputPassword, useForm } from "~/components/forms";
 import FacebookIcon from "~/components/icons/facebook";
 import { ErrorCode } from "~/lib/errorCodes";
+import { getServerAuthSession } from "~/server/lib/getServerAuthSession";
 
 const userLoginSchema = z.object({
   csrfToken: z.string(),
@@ -133,21 +134,21 @@ const SignIn = ({ csrfToken }: InferGetServerSidePropsType<typeof getServerSideP
 };
 export default SignIn;
 
-// export async function getServerSideProps(context: GetServerSidePropsContext) {
-//   const session = await getServerAuthSession(context);
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerAuthSession(context);
 
-//   if (session) {
-//     return {
-//       redirect: {
-//         destination: "/",
-//         permanent: false,
-//       },
-//     };
-//   }
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
-//   return {
-//     props: {
-//       csrfToken: await getCsrfToken(context),
-//     },
-//   };
-// }
+  return {
+    props: {
+      csrfToken: await getCsrfToken(context),
+    },
+  };
+}
