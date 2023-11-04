@@ -2,17 +2,22 @@ import { z } from "zod";
 
 import { env } from "~/env/server.mjs";
 import { publicProcedure, router } from "~/server/api/trpc";
-import { Octokit } from "~/server/octokit";
+import { Octokit, RequestError } from "~/server/octokit";
 import testUsers from "~/testUsers.exclude.json";
 
 //
 // READ
 
-const octokit = new Octokit({
-  //sends request with HTTP header: `Authorization: token <GITHUB_AUTH_TOKEN>`
-  auth: env.GITHUB_AUTH_TOKEN,
-});
+const octokit = new Octokit();
 
+/**
+ * @see https://github.com/octokit/octokit.js#graphql-api-queries
+ * @see https://docs.github.com/en/graphql/reference/objects#user
+ * @see https://github.com/octokit/plugin-paginate-graphql.js
+ *
+ * To get all results use pagination. Example:
+ * const { allItems } = await octokit.graphql.paginate(query, variables);
+ */
 export const githubRouter = router({
   /**
    * READ
@@ -32,42 +37,55 @@ export const githubRouter = router({
         input.language && "language:" + input.language
       }`;
       console.log("q", q);
-      const response = await octokit.request("POST /graphql", {
-        query: `
-        query SearchUsers($query: String = "${q}", $perPage: Int = 1, $after: String) {
-          search(type: USER, query: $query, first: $perPage, after: $after) {
-            userCount
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-            nodes {
-              ... on User {
-                avatarUrl
-                bio
-       
-                followers {
-                  totalCount
+      try {
+        const response = await octokit.graphql(
+          `
+            query SearchUsers($q: String!, $perPage: Int, $after: String) {
+              search(type: USER, query: $q, first: $perPage, after: $after) {
+                userCount
+                pageInfo {
+                  hasNextPage
+                  endCursor
                 }
+                nodes {
+                  ... on User {
+                    avatarUrl
+                    bio
           
-                login
-                name
-                updatedAt
-                url
-                websiteUrl
+                    followers {
+                      totalCount
+                    }
+              
+                    login
+                    name
+                    updatedAt
+                    url
+                    websiteUrl
+                  }
+                }
               }
             }
-          }
-        }
-        
         `,
-        queryVariables: {
-          query: q,
-          perPage: 10,
-          after: null,
-        },
-      });
-      console.log("response", response.data.data.search);
-      return response.data.data.search;
+          {
+            q,
+            perPage: 1,
+            after: null,
+          }
+        );
+        console.log("response", response.search);
+        return response.search;
+      } catch (error) {
+        if (error instanceof RequestError) {
+          // handle Octokit error
+          // error.message; // Oops
+          // error.status; // 500
+          // error.request; // { method, url, headers, body }
+          // error.response; // { url, status, headers, data }
+          console.log("e", error);
+        } else {
+          // handle all other errors
+          throw error;
+        }
+      }
     }),
 });

@@ -5,9 +5,14 @@ import { restEndpointMethods } from "@octokit/plugin-rest-endpoint-methods";
 import { retry } from "@octokit/plugin-retry";
 import { throttling } from "@octokit/plugin-throttling";
 
+import { env } from "~/env/server.mjs";
+
 export { RequestError } from "@octokit/request-error";
 export type { PageInfoForward, PageInfoBackward } from "@octokit/plugin-paginate-graphql";
 
+/**
+ * @see https://github.com/octokit/octokit.js
+ */
 export const Octokit = OctokitCore.plugin(
   restEndpointMethods,
   paginateRest,
@@ -15,6 +20,7 @@ export const Octokit = OctokitCore.plugin(
   retry,
   throttling
 ).defaults({
+  auth: env.GITHUB_AUTH_TOKEN,
   //userAgent: `octokit.js/${VERSION}`,
   throttle: {
     onRateLimit,
