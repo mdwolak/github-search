@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-import { env } from "~/env/server.mjs";
+import type { SearchUsersResponse } from "~/lib/schemas/graphQL.schema";
 import { publicProcedure, router } from "~/server/api/trpc";
 import { Octokit, RequestError } from "~/server/octokit";
-import testUsers from "~/testUsers.exclude.json";
 
 //
 // READ
@@ -38,16 +37,16 @@ export const githubRouter = router({
       }`;
       console.log("q", q);
       try {
-        const response = await octokit.graphql(
+        const response = await octokit.graphql<SearchUsersResponse>(
           `
             query SearchUsers($q: String!, $perPage: Int, $after: String) {
               search(type: USER, query: $q, first: $perPage, after: $after) {
-                userCount
+                totalCount : userCount
                 pageInfo {
                   hasNextPage
                   endCursor
                 }
-                nodes {
+                items: nodes {
                   ... on User {
                     avatarUrl
                     bio
@@ -68,12 +67,16 @@ export const githubRouter = router({
         `,
           {
             q,
-            perPage: 1,
+            perPage: 10,
             after: null,
           }
         );
-        console.log("response", response.search);
-        return response.search;
+        const result = {
+          ...response.search,
+          items: response.search.items.filter((user) => Object.keys(user).length > 0),
+        };
+        console.log("response", result);
+        return result;
       } catch (error) {
         if (error instanceof RequestError) {
           // handle Octokit error

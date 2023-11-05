@@ -1,4 +1,3 @@
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -13,69 +12,51 @@ import { z } from "zod";
 import { Button, Link, toast } from "~/components/core";
 import { Form, Input, ValidationSummary, useForm } from "~/components/forms";
 import { getLayout } from "~/components/layouts/Layout";
+import type { User } from "~/lib/schemas/graphQL.schema";
 import { api } from "~/utils/api";
 
 //row shape
-interface User {
-  id: number;
-  login: string;
-  followers?: { totalCount: number };
-  name: string;
-  bio?: string;
-  websiteUrl: string;
-  avatarUrl: string;
-  url: string;
-}
-
 const columnHelper = createColumnHelper<User>();
 const columns = [
-  // Accessor Column
-  columnHelper.accessor("id", {
-    header: "ID",
-  }),
-  // Accessor Column
+  columnHelper.accessor("id", { header: "ID" }),
   columnHelper.accessor("login", {
     header: "Login",
   }),
-  // Accessor Column
   columnHelper.accessor("followers.totalCount", {
     header: "Followers",
   }),
-  // Accessor Column
   columnHelper.accessor("name", {
     header: "Name",
   }),
   columnHelper.accessor("bio", {
     header: "Bio",
   }),
-  // Accessor Column
   columnHelper.accessor("websiteUrl", {
     header: "websiteUrl",
   }),
-  // Accessor Column
   columnHelper.accessor("avatarUrl", {
     header: "Avatar",
     cell: (props) => (
       <img className="inline-block h-14 w-14 rounded-md" src={props.getValue()} alt="avatar" />
     ),
   }),
-  // Accessor Column
   columnHelper.accessor("url", {
     header: "Repos",
-    cell: (props) => (
-      <Link href={props.getValue() as string} target="_blank" rel="noreferrer">
-        Repositories
-      </Link>
-    ),
+    cell: (props) =>
+      props.getValue() && (
+        <Link href={props.getValue() as string} target="_blank" rel="noreferrer">
+          Repositories
+        </Link>
+      ),
   }),
 ];
 
-const searchParamsSchema = z.object({
+const searchUsersParamsSchema = z.object({
   query: z.string().optional(),
   location: z.string().optional(),
   language: z.string().optional(),
 });
-type SearchParamsInput = z.infer<typeof searchParamsSchema>;
+type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
 
 const UserSearchList = () => {
   const router = useRouter();
@@ -85,7 +66,7 @@ const UserSearchList = () => {
   const language = (router.query.language as string) || "";
 
   const form = useForm({
-    schema: searchParamsSchema,
+    schema: searchUsersParamsSchema,
   });
   const { setFocus } = form;
 
@@ -97,7 +78,7 @@ const UserSearchList = () => {
 
   const enabled = Boolean(location || language || query);
 
-  const handleSearch = (data: SearchParamsInput) => {
+  const handleSearch = (data: SearchUsersParamsInput) => {
     console.log(data);
     router.push({
       query: {
@@ -107,10 +88,10 @@ const UserSearchList = () => {
     });
   };
 
-  const { data: users = [], isLoading } = api.github.searchUsers.useQuery(
+  const { data: response, isLoading } = api.github.searchUsers.useQuery(
     { query, location, language },
     {
-      select: (data) => data.nodes,
+      //select: (data: SearchUsersResponse["search"]) => data,
       enabled,
       onSuccess(data) {
         console.log(data);
@@ -125,7 +106,7 @@ const UserSearchList = () => {
   );
 
   const table = useReactTable({
-    data: users,
+    data: response?.items || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

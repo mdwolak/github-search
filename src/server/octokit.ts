@@ -8,7 +8,7 @@ import { throttling } from "@octokit/plugin-throttling";
 import { env } from "~/env/server.mjs";
 
 export { RequestError } from "@octokit/request-error";
-export type { PageInfoForward, PageInfoBackward } from "@octokit/plugin-paginate-graphql";
+//DON'T Load to the client: export type { PageInfoForward, PageInfoBackward } from "@octokit/plugin-paginate-graphql";
 
 /**
  * @see https://github.com/octokit/octokit.js
