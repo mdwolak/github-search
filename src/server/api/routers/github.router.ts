@@ -21,6 +21,39 @@ export const githubRouter = router({
   /**
    * READ
    */
+  infinitePosts: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
+      })
+    )
+    .query(async ({ input }) => {
+      const cursor = input.cursor || 0;
+      const limit = input.limit || 10;
+
+      const data = Array(limit)
+        .fill(0)
+        .map((_, i) => {
+          return {
+            name: "Project " + (i + cursor) + ` (server time: ${Date.now()})`,
+            id: i + cursor,
+          };
+        });
+
+      const nextId = cursor < 10 ? data[data.length - 1].id + 1 : null;
+      const previousId = cursor > -10 ? data[0].id - limit : null;
+      //res.json({ data, nextId, previousId })
+
+      console.log("data", data);
+
+      return {
+        data,
+        nextId,
+        previousId,
+      };
+    }),
+
   searchUsers: publicProcedure
     .input(
       z.object({

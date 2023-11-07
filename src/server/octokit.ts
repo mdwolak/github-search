@@ -12,6 +12,8 @@ export { RequestError } from "@octokit/request-error";
 
 /**
  * @see https://github.com/octokit/octokit.js
+ * @see https://github.com/octokit/octokit.js/blob/main/src/octokit.ts
+ * @see https://www.npmjs.com/package/@octokit/plugin-throttling
  */
 export const Octokit = OctokitCore.plugin(
   restEndpointMethods,
