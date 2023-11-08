@@ -5,24 +5,20 @@ import { useInView } from "react-intersection-observer";
 import { z } from "zod";
 
 import UserInfo from "~/components/UserInfo";
-import { Button, Link, toast } from "~/components/core";
+import { Button, toast } from "~/components/core";
 import { Spinner } from "~/components/core/Spinner";
-import { Form, Input, ValidationSummary, useForm } from "~/components/forms";
+import { Checkbox, Form, Input, ValidationSummary, useForm } from "~/components/forms";
 import type { User } from "~/lib/schemas/graphQL.schema";
 import { api } from "~/utils/api";
 
+/** Apart from query, filters are applied on the results returned from the server. This allows to use the built-in paging functionality on GitHub as is. */
 const searchUsersParamsSchema = z.object({
   query: z.string().optional(),
+  hasWebsiteUrl: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
 });
 type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
 
-/** Filters are applied on the results returned from server. This allows to use built-in paging on GitHub as is. */
-const filterSchema = z.object({
-  hasWebsiteUrl: z.coerce.boolean().optional(),
-});
-type FilterInput = z.infer<typeof filterSchema>;
-
-const filterItems = (items: User[], filters: FilterInput): User[] => {
+const filterItems = (items: User[], filters: SearchUsersParamsInput): User[] => {
   return items.filter((user) => {
     if (Object.keys(user).length == 0) return false;
     if (filters.hasWebsiteUrl && !user.websiteUrl) return false;
@@ -34,8 +30,9 @@ export default function Example() {
   const { ref, inView } = useInView();
   const router = useRouter();
 
-  const query = (router.query.query as string) || "";
-  const filters = filterSchema.parse(router.query);
+  const filters = searchUsersParamsSchema.parse(router.query);
+  const query = filters.query;
+  console.log("router", filters.hasWebsiteUrl);
 
   const form = useForm({
     schema: searchUsersParamsSchema,
@@ -43,8 +40,8 @@ export default function Example() {
   const { setFocus, reset } = form;
 
   useEffect(() => {
-    const data = { query };
-    reset(data);
+    console.log("filters", filters);
+    reset({ ...filters });
     setFocus("query");
   }, [query, reset, setFocus]);
 
@@ -72,12 +69,12 @@ export default function Example() {
   } = api.github.searchUsersInfinite.useInfiniteQuery(
     {
       limit: 10,
-      query,
+      query: query as string,
     },
     {
       enabled,
       getNextPageParam: (lastPage) => {
-        console.log("getNextPageParam", lastPage.pageInfo.endCursor);
+        //console.log("getNextPageParam", lastPage.pageInfo.endCursor);
         return lastPage.pageInfo.hasNextPage ? lastPage.pageInfo.endCursor : undefined;
       },
       onSuccess(data) {
@@ -99,7 +96,7 @@ export default function Example() {
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
-  const appendToQueryHandler = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const appendToQueryHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const target = e.currentTarget;
     const query = form.getValues("query");
@@ -112,36 +109,36 @@ export default function Example() {
     <div className="p-4">
       <Form form={form} handleSubmit={handleSearch} className="">
         <div className="flex w-full flex-row">
-          <fieldset className="flex-1 flex-grow space-y-2">
+          <fieldset className="flex-1 flex-grow space-y-1">
             <ValidationSummary errors={form.formState.errors} />
             <Input
               label="Query"
               {...form.register("query")}
               placeholder="Enter query to start searching"
             />
-            <Input type="checkbox" label="Has Website" {...form.register("hasWebsiteUrl")} />
             <div className="text-xs">
               Quick choices:{" "}
-              <Link href={"javascript:void(0);"} onClick={appendToQueryHandler}>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
                 language:TypeScript
-              </Link>
+              </Button>
               {", "}
-              <Link href={"javascript:void(0);"} onClick={appendToQueryHandler}>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
                 location:Poland
-              </Link>
+              </Button>
               {", "}
-              <Link href={"javascript:void(0);"} onClick={appendToQueryHandler}>
-                {"repo:>10"}
-              </Link>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
+                {"repos:>10"}
+              </Button>
             </div>
+            <Checkbox label="Has Website" {...form.register("hasWebsiteUrl")} />
           </fieldset>
           <div className="flex py-7">
             <Button
               type="submit"
               isLoading={isLoading && enabled}
-              disabled={!form.formState.isDirty || !form.getValues("query")}
+              //disabled={!form.formState.isDirty || !form.getValues("query")}
               className="ml-2">
-              Save
+              Search
             </Button>
           </div>
         </div>

@@ -12,3 +12,19 @@
     font-named-instance: "Regular";
   }
 }
+
+.user-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-gap: 1rem;
+  align-items: center;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.linkButton {
+  @apply bg-transparent text-xs text-blue-900 outline-none focus:outline-none;
+}

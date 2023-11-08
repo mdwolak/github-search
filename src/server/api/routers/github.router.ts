@@ -2,10 +2,7 @@ import { z } from "zod";
 
 import type { SearchUsersResponse } from "~/lib/schemas/graphQL.schema";
 import { publicProcedure, router } from "~/server/api/trpc";
-import { Octokit, RequestError } from "~/server/octokit";
-
-//
-// READ
+import { Octokit } from "~/server/octokit";
 
 const octokit = new Octokit();
 

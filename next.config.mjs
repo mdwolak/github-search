@@ -13,14 +13,14 @@ const config = {
   //   locales: ["en"],
   //   defaultLocale: "en",
   // },
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/search",
-        permanent: false,
-      },
-    ];
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/",
+  //       destination: "/search",
+  //       permanent: false,
+  //     },
+  //   ];
+  // },
 };
 export default config;

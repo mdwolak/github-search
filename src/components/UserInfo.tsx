@@ -15,7 +15,11 @@ const UserInfo: React.FC<User> = ({
 }) => {
   return (
     <div>
-      <img src={avatarUrl} alt={`${login}'s avatar`} />
+      <img
+        className="inline-block h-14 w-14 rounded-md"
+        src={avatarUrl}
+        alt={`${login}'s avatar`}
+      />
       <h2>{name}</h2>
       <p>{bio}</p>
       <ul>
