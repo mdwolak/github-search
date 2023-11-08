@@ -53,8 +53,6 @@ const columns = [
 
 const searchUsersParamsSchema = z.object({
   query: z.string().optional(),
-  location: z.string().optional(),
-  language: z.string().optional(),
 });
 type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
 
@@ -62,21 +60,19 @@ const UserSearchList = () => {
   const router = useRouter();
 
   const query = (router.query.query as string) || "";
-  const location = (router.query.location as string) || "";
-  const language = (router.query.language as string) || "";
 
   const form = useForm({
     schema: searchUsersParamsSchema,
   });
-  const { setFocus } = form;
+  const { setFocus, reset } = form;
 
   useEffect(() => {
-    setFocus("location");
-    const data = { query, location, language };
-    form.reset(data);
-  }, [query, location, language]);
+    const data = { query };
+    reset(data);
+    setFocus("query");
+  }, [query, reset, setFocus]);
 
-  const enabled = Boolean(location || language || query);
+  const enabled = Boolean(query);
 
   const handleSearch = (data: SearchUsersParamsInput) => {
     console.log(data);
@@ -89,7 +85,7 @@ const UserSearchList = () => {
   };
 
   const { data: response, isLoading } = api.github.searchUsers.useQuery(
-    { query, location, language },
+    { query },
     {
       //select: (data: SearchUsersResponse["search"]) => data,
       enabled,
@@ -117,31 +113,24 @@ const UserSearchList = () => {
         form={form}
         handleSubmit={handleSearch}
         className="flex h-full flex-col bg-white shadow-xl">
-        <div className="h-0 flex-1 overflow-y-auto">
-          {/* Content */}
-          <fieldset className="space-y-6 p-4 pt-6">
-            <ValidationSummary errors={form.formState.errors} />
-            {/* <ApiErrorMessage error={apiError} visible={form.formState.isValid} /> */}
-
-            <Input label="Query" {...form.register("query")} />
-            <Input label="Location" {...form.register("location")} />
-            <Input label="Language" {...form.register("language")} />
-          </fieldset>
-          {/* /End Content */}
-        </div>
+        <fieldset className="space-y-6 p-4 pt-6">
+          <ValidationSummary errors={form.formState.errors} />
+          <Input label="Query" {...form.register("query")} />
+        </fieldset>
 
         <div className="sm:px-6; flex border-t border-gray-200 px-4 py-5">
           <Button
             type="submit"
             fullWidth
             isLoading={isLoading && enabled}
-            disabled={!form.formState.isDirty}>
+            disabled={!form.formState.isDirty || !form.getValues("query")}>
             Save
           </Button>
         </div>
       </Form>
-
-      {isLoading ? (
+      {!enabled ? (
+        <div>Enter query to start searching</div>
+      ) : isLoading ? (
         <div>Loading...</div>
       ) : (
         <table>

@@ -10,6 +10,7 @@ export interface User {
   bio?: string;
   websiteUrl: string;
   avatarUrl: string;
+  updatedAt: string;
   url: string;
 }
 export type SearchUsersResponse = {

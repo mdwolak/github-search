@@ -19,7 +19,13 @@ query SearchUsers($query: String!, $perPage: Int!, $after: String) {
         followers {
           totalCount
         }
+        # hasSponsorsListing Boolean! True if this user/organization has a GitHub Sponsors listing.
+        # id
+        # isBountyHunter Boolean! Whether or not this user is a participant in the GitHub Security Bug Bounty.
+        # isDeveloperProgramMember Boolean! A person that builds and integration with GitHub API
+        # isGitHubStar
         # isHireable
+        # itemShowcase ProfileItemShowcase! Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
         # # Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
         # # itemShowcase
         # # location
@@ -55,6 +61,7 @@ query SearchUsers($query: String!, $perPage: Int!, $after: String) {
         # pullRequests {
         #   totalCount
         # }
+        # recentProjects ( after String, before String, first Int, last Int ) ProjectV2Connection! Recent projects that this user has modified in the context of the owner.
         # repositories(
         #   first: 100
         #   isArchived: false
@@ -66,6 +73,8 @@ query SearchUsers($query: String!, $perPage: Int!, $after: String) {
         #     name
         #   }
         # }
+        # repositoriesContributedTo A list of repositories that the user recently contributed to.
+        # resourcePath
         # socialAccounts(first: 100) {
         #   nodes {
         #     displayName
@@ -73,6 +82,13 @@ query SearchUsers($query: String!, $perPage: Int!, $after: String) {
         #     url
         #   }
         # }
+        # sponsors {
+        #  totalCount
+        # }
+        # status {
+        #  message
+        # }
+        # topRepositories ( after String, before String, first Int, last Int, orderBy RepositoryOrder!, since DateTime ) RepositoryConnection! Repositories the user has contributed to, ordered by contribution rank, plus repositories the user has created
         # twitterUsername
         updatedAt
         url

@@ -9,6 +9,40 @@ import { Octokit, RequestError } from "~/server/octokit";
 
 const octokit = new Octokit();
 
+const searchUsersQuery = `
+query SearchUsers($q: String!, $perPage: Int, $after: String) {
+  search(type: USER, query: $q, first: $perPage, after: $after) {
+    totalCount : userCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    items: nodes {
+      ... on User {
+        avatarUrl
+        bio
+        id
+        followers {
+          totalCount
+        }
+  
+        login
+        name
+        updatedAt
+        url
+        websiteUrl
+      }
+      ... on Organization {
+        id
+        login
+        name
+      }
+    }
+  }
+}
+`;
+let cache: SearchUsersResponse["search"];
+const devMode = false;
 /**
  * @see https://github.com/octokit/octokit.js#graphql-api-queries
  * @see https://docs.github.com/en/graphql/reference/objects#user
@@ -21,89 +55,49 @@ export const githubRouter = router({
   /**
    * READ
    */
-  infinitePosts: publicProcedure
+  searchUsersInfinite: publicProcedure
     .input(
       z.object({
+        query: z.string(),
         limit: z.number().min(1).max(100).nullish(),
-        cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
+        cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
       })
     )
     .query(async ({ input }) => {
-      const cursor = input.cursor || 0;
-      const limit = input.limit || 10;
+      console.log("q", input.query);
 
-      const data = Array(limit)
-        .fill(0)
-        .map((_, i) => {
-          return {
-            name: "Project " + (i + cursor) + ` (server time: ${Date.now()})`,
-            id: i + cursor,
-          };
-        });
+      if (devMode && cache) return cache;
 
-      const nextId = cursor < 10 ? data[data.length - 1].id + 1 : null;
-      const previousId = cursor > -10 ? data[0].id - limit : null;
-      //res.json({ data, nextId, previousId })
+      const response = await octokit.graphql<SearchUsersResponse>(searchUsersQuery, {
+        q: input.query + " type:user",
+        perPage: input.limit || 10,
+        after: input.cursor,
+      });
+      const result = { ...response.search };
+      console.log("response", result);
 
-      console.log("data", data);
+      if (devMode) cache = result;
 
-      return {
-        data,
-        nextId,
-        previousId,
-      };
+      return result;
     }),
 
   searchUsers: publicProcedure
     .input(
       z.object({
         query: z.string(),
-        location: z.string(),
-        language: z.string(),
       })
     )
     .query(async ({ input }) => {
       console.log("input", input);
       //return testUsers;
-      const q = `${input.query && input.query} ${input.location && "location:" + input.location} ${
-        input.language && "language:" + input.language
-      }`;
-      console.log("q", q);
+
+      console.log("q", input.query);
       try {
-        const response = await octokit.graphql<SearchUsersResponse>(
-          `
-            query SearchUsers($q: String!, $perPage: Int, $after: String) {
-              search(type: USER, query: $q, first: $perPage, after: $after) {
-                totalCount : userCount
-                pageInfo {
-                  hasNextPage
-                  endCursor
-                }
-                items: nodes {
-                  ... on User {
-                    avatarUrl
-                    bio
-          
-                    followers {
-                      totalCount
-                    }
-              
-                    login
-                    name
-                    updatedAt
-                    url
-                    websiteUrl
-                  }
-                }
-              }
-            }
-        `,
-          {
-            q,
-            perPage: 10,
-            after: null,
-          }
-        );
+        const response = await octokit.graphql<SearchUsersResponse>(searchUsersQuery, {
+          q: input.query,
+          perPage: 10,
+          after: null,
+        });
         const result = {
           ...response.search,
           items: response.search.items.filter((user) => Object.keys(user).length > 0),
@@ -111,17 +105,8 @@ export const githubRouter = router({
         console.log("response", result);
         return result;
       } catch (error) {
-        if (error instanceof RequestError) {
-          // handle Octokit error
-          // error.message; // Oops
-          // error.status; // 500
-          // error.request; // { method, url, headers, body }
-          // error.response; // { url, status, headers, data }
-          console.log("e", error);
-        } else {
-          // handle all other errors
-          throw error;
-        }
+        console.log("e", error);
+        throw error;
       }
     }),
 });
