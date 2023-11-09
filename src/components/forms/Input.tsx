@@ -40,7 +40,7 @@ export const Input = forwardRef(function Input(
       control={
         <input
           className={classNames(
-            "block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 sm:text-sm",
+            "block w-full appearance-none rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder-gray-500 dark:text-white sm:text-sm",
             className,
             { "border-red-500": error }
           )}
@@ -110,7 +110,7 @@ export const Checkbox = forwardRef(function Checkbox(
       <div className="flex h-6 items-center">
         <input
           className={classNames(
-            "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600",
+            "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:text-white",
             className,
             { "border-red-500": error }
           )}
@@ -122,7 +122,7 @@ export const Checkbox = forwardRef(function Checkbox(
         />
       </div>
       <div className="ml-3 text-sm leading-6">
-        <label htmlFor={targetId} className="font-medium text-gray-900">
+        <label htmlFor={targetId} className="font-medium text-gray-900 dark:text-white">
           {label}
           {props.required && !props.disabled && <Asterisk />}
         </label>

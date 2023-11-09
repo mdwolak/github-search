@@ -106,7 +106,7 @@ export default function Example() {
   };
 
   return (
-    <div className="p-4">
+    <div className="dark bg-gray-900 p-4">
       <Form form={form} handleSubmit={handleSearch} className="">
         <div className="flex w-full flex-row">
           <fieldset className="flex-1 flex-grow space-y-1">
@@ -154,13 +154,15 @@ export default function Example() {
         <span>Error: {error.message}</span>
       ) : (
         <>
-          {data.pages.map((page) => (
-            <React.Fragment key={page.pageInfo.endCursor}>
-              {filterItems(page.items, filters).map((user) => (
-                <UserInfo key={user.id} {...user} />
-              ))}
-            </React.Fragment>
-          ))}
+          <UserInfo.Table>
+            {data.pages.map((page) => (
+              <React.Fragment key={page.pageInfo.endCursor}>
+                {filterItems(page.items, filters).map((user) => (
+                  <UserInfo.Row key={user.id} {...user} />
+                ))}
+              </React.Fragment>
+            ))}
+          </UserInfo.Table>
           <div>
             <button
               ref={ref}

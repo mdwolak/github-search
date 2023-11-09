@@ -15,7 +15,7 @@ export const TableCaption = ({ title, children, buttonText, onButtonClick }: Tab
     <div className="sm:flex sm:items-center">
       <div className="sm:flex-auto">
         <h1 className="text-base font-semibold leading-6 text-gray-900">{title}</h1>
-        {children && <p className="mt-2 text-sm text-gray-700">{children}</p>}
+        {children && <p className="mt-2 text-sm text-gray-700 dark:text-white">{children}</p>}
       </div>
       <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button

@@ -2,9 +2,9 @@ import { Head, Html, Main, NextScript } from "next/document";
 
 function MyDocument() {
   return (
-    <Html className="h-full bg-gray-50">
+    <Html className="dark h-full">
       <Head />
-      <body className="desktop-transparent h-full antialiased">
+      <body className="desktop-transparent h-full antialiased dark:text-gray-100">
         <Main />
         <NextScript />
         <div id="main-modal"></div>

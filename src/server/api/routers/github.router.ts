@@ -39,7 +39,7 @@ query SearchUsers($q: String!, $perPage: Int, $after: String) {
 }
 `;
 let cache: SearchUsersResponse["search"];
-const devMode = false;
+const devMode = true;
 /**
  * @see https://github.com/octokit/octokit.js#graphql-api-queries
  * @see https://docs.github.com/en/graphql/reference/objects#user

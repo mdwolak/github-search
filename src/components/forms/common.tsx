@@ -10,7 +10,10 @@ export function Label(props: ComponentProps<"label"> & { asterisk?: boolean }) {
   const { asterisk, children, ...rest } = props;
   return (
     <label
-      className={classNames("block text-sm font-medium text-gray-700", props.className)}
+      className={classNames(
+        "block text-sm font-medium text-gray-700 dark:text-white",
+        props.className
+      )}
       {...rest}>
       {children}
       {asterisk && <Asterisk />}
