@@ -15,6 +15,7 @@ import { api } from "~/utils/api";
 const searchUsersParamsSchema = z.object({
   query: z.string().optional(),
   hasWebsiteUrl: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
+  extended: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
 });
 type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
 
@@ -70,6 +71,7 @@ export default function Example() {
     {
       limit: 10,
       query: query as string,
+      extended: filters.extended,
     },
     {
       enabled,
@@ -106,7 +108,7 @@ export default function Example() {
   };
 
   return (
-    <div className="dark bg-gray-900 p-4">
+    <div className=" p-4">
       <Form form={form} handleSubmit={handleSearch} className="">
         <div className="flex w-full flex-row">
           <fieldset className="flex-1 flex-grow space-y-1">
@@ -130,7 +132,10 @@ export default function Example() {
                 {"repos:>10"}
               </Button>
             </div>
+            Client-side filters:
             <Checkbox label="Has Website" {...form.register("hasWebsiteUrl")} />
+            Server-side filters:
+            <Checkbox label="Extended" {...form.register("extended")} />
           </fieldset>
           <div className="flex py-7">
             <Button

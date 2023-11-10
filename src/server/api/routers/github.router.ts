@@ -2,42 +2,11 @@ import { z } from "zod";
 
 import type { SearchUsersResponse } from "~/lib/schemas/graphQL.schema";
 import { publicProcedure, router } from "~/server/api/trpc";
+import { searchUsersQuery } from "~/server/graphql/SearchUsers";
 import { Octokit } from "~/server/octokit";
 
 const octokit = new Octokit();
 
-const searchUsersQuery = `
-query SearchUsers($q: String!, $perPage: Int, $after: String) {
-  search(type: USER, query: $q, first: $perPage, after: $after) {
-    totalCount : userCount
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-    items: nodes {
-      ... on User {
-        avatarUrl
-        bio
-        id
-        followers {
-          totalCount
-        }
-  
-        login
-        name
-        updatedAt
-        url
-        websiteUrl
-      }
-      ... on Organization {
-        id
-        login
-        name
-      }
-    }
-  }
-}
-`;
 let cache: SearchUsersResponse["search"];
 const devMode = true;
 /**
@@ -56,6 +25,7 @@ export const githubRouter = router({
     .input(
       z.object({
         query: z.string(),
+        extended: z.boolean().nullish(),
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
       })
@@ -69,6 +39,7 @@ export const githubRouter = router({
         q: input.query + " type:user",
         perPage: input.limit || 10,
         after: input.cursor,
+        extended: input.extended,
       });
       const result = { ...response.search };
       console.log("response", result);
