@@ -8,7 +8,7 @@ import UserInfo from "~/components/UserInfo";
 import { Button, toast } from "~/components/core";
 import { Spinner } from "~/components/core/Spinner";
 import { Checkbox, Form, Input, ValidationSummary, useForm } from "~/components/forms";
-import type { User } from "~/lib/schemas/graphQL.schema";
+import type { User } from "~/lib/schemas/ghUser.schema";
 import { api } from "~/utils/api";
 
 /** Apart from query, filters are applied on the results returned from the server. This allows to use the built-in paging functionality on GitHub as is. */

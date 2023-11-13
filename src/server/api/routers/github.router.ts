@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { SearchUsersResponse } from "~/lib/schemas/graphQL.schema";
+import type { SearchUsersResponse } from "~/lib/schemas/ghUser.schema";
 import { publicProcedure, router } from "~/server/api/trpc";
 import { searchUsersQuery } from "~/server/graphql/SearchUsers";
 import { Octokit } from "~/server/octokit";
