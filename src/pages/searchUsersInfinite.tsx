@@ -7,7 +7,7 @@ import UserInfo from "~/components/UserInfo";
 import { Button, toast } from "~/components/core";
 import { Spinner } from "~/components/core/Spinner";
 import { Checkbox, Form, Input, ValidationSummary, useForm } from "~/components/forms";
-import { type SearchUsersParamsInput, searchUsersParamsSchema } from "~/lib/schemas/ghUser.schema";
+import { type SearchUsersParamsInput, searchUsersParamsSchema } from "~/lib/schemas/github.schema";
 import { api } from "~/utils/api";
 
 export default function Example() {

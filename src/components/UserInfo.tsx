@@ -4,7 +4,7 @@ import React from "react";
 import { CurrencyDollarIcon, LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 import { Link } from "~/components/core";
-import type { User } from "~/lib/schemas/ghUser.schema";
+import type { RouterOutputs } from "~/utils/api";
 
 const shadesOfBlack = Array.from({ length: 11 }, (_, i) => `hsl(0, 0%, ${90 - i * 9}%)`);
 
@@ -16,16 +16,12 @@ const getProviderIcon = (provider: string, url: string) => {
   }
 };
 
-const GITHUB_ORG_REGEX = /@(\w+)/g;
-const HIREABLE_KEYWORDS = /\b(hir\|job|free-lanc|freelanc|project)\w*\b/gi;
+type User = RouterOutputs["github"]["searchUsersInfinite"]["items"][number];
 
 const Row: React.FC<User> = ({
   avatarUrl,
-  bio,
-  company,
   createdAt,
   email,
-  //estimatedNextSponsorsPayoutInCents
   followers,
   hasSponsorsListing,
   id,
@@ -33,35 +29,12 @@ const Row: React.FC<User> = ({
   location,
   login,
   name,
-  //resourcePath,
   socialAccounts,
   status,
-  //twitterUsername,
-  updatedAt,
   url, //profile url
   websiteUrl, //personal website
+  extendedAttributes: ext,
 }) => {
-  const updatedAtDate = new Date(updatedAt);
-  const timeDiff = Math.abs(new Date().getTime() - updatedAtDate.getTime());
-  const monthsAgo = Math.floor(timeDiff / (1000 * 3600 * 24) / 30);
-  const activityIndex = monthsAgo >= 0 && monthsAgo <= 9 ? monthsAgo : 10;
-
-  // Replace @org with a link to the org's GitHub page
-  const companyWithLink = company?.replace(
-    GITHUB_ORG_REGEX,
-    '<a href="https://github.com/$1" target="_blank">@$1</a>'
-  );
-
-  //is user contactable by selected means of communication
-  const contactable = email || socialAccounts.totalCount > 0 || websiteUrl;
-
-  // Highlight hireable keywords in the bio using <strong> tags
-  const bioHTML = bio?.replace(HIREABLE_KEYWORDS, "<strong>$1</strong>");
-
-  // Check if the bio contains any hireable keywords
-  const hireableKeywords = bioHTML !== bio;
-  const hireable = isHireable || hasSponsorsListing || hireableKeywords;
-
   return (
     <tr key={id}>
       <td>{location}</td>
@@ -82,9 +55,9 @@ const Row: React.FC<User> = ({
       </td>
       <td>
         <span
-          style={{ backgroundColor: `${shadesOfBlack[activityIndex]}` }}
+          style={{ backgroundColor: `${shadesOfBlack[ext.activityIndex]}` }}
           className={`inline-flex items-center rounded-md  px-2 py-1 text-xs font-medium text-black ring-1 ring-inset ring-green-600/20`}>
-          {activityIndex}
+          {ext.activityIndex}
         </span>
       </td>{" "}
       <td className="w-10">
@@ -96,7 +69,7 @@ const Row: React.FC<User> = ({
           />
         </Link>
       </td>
-      <td>{contactable && "yes"}</td>
+      <td>{ext.isContactable && "yes"}</td>
       <td>
         <div className="flex flex-row gap-1.5">
           <span className="text-sm font-medium">{name} </span>
@@ -106,10 +79,10 @@ const Row: React.FC<User> = ({
           {SocialAccounts(socialAccounts)}
           {email && <Link href={`mailto:${email}`}>{email}</Link>}
         </div>
-        {companyWithLink && (
-          <p className="text-gray-300" dangerouslySetInnerHTML={{ __html: companyWithLink }}></p>
+        {ext.companyHtml && (
+          <p className="text-gray-300" dangerouslySetInnerHTML={{ __html: ext.companyHtml }}></p>
         )}
-        {bioHTML && <p className="text-gray-500">{bioHTML}</p>}
+        {ext.bioHtml && <p className="text-gray-500">{ext.bioHtml}</p>}
         {status?.message && <p className="text-gray-500">Status: {status?.message}</p>}
       </td>
     </tr>

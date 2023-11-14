@@ -12,11 +12,11 @@ import { z } from "zod";
 import { Button, Link, toast } from "~/components/core";
 import { Form, Input, ValidationSummary, useForm } from "~/components/forms";
 import { getLayout } from "~/components/layouts/Layout";
-import type { User } from "~/lib/schemas/ghUser.schema";
+import type { GitHubUser } from "~/lib/ghUser.schema";
 import { api } from "~/utils/api";
 
 //row shape
-const columnHelper = createColumnHelper<User>();
+const columnHelper = createColumnHelper<GitHubUser>();
 const columns = [
   columnHelper.accessor("id", { header: "ID" }),
   columnHelper.accessor("login", {

@@ -1,10 +1,8 @@
-import z from "zod";
-
 type PageInfoForward = {
   hasNextPage: boolean;
   endCursor: string;
 };
-export interface User {
+export interface GitHubUser {
   avatarUrl: string;
   bio?: string;
   company?: string | null;
@@ -34,22 +32,12 @@ export interface User {
   websiteUrl: string; // The user's public website URL
 }
 
-export type SearchUsersResponse = {
+export type GitHubSearchUsersResponse = {
   search: {
     totalCount: number;
     pageInfo: PageInfoForward;
-    items: User[];
+    items: GitHubUser[];
     retrievedCount: number;
     filteredCount: number;
   };
 };
-
-export const searchUsersParamsSchema = z.object({
-  query: z.string().optional(),
-  hasWebsiteUrl: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
-  extended: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
-
-  limit: z.coerce.number().min(1).max(100).default(10),
-  cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
-});
-export type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
