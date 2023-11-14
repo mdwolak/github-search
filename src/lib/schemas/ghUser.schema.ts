@@ -1,3 +1,5 @@
+import z from "zod";
+
 type PageInfoForward = {
   hasNextPage: boolean;
   endCursor: string;
@@ -8,7 +10,7 @@ export interface User {
   company?: string | null;
   createdAt: string;
   email?: string | null; // The user's public email address
-  estimatedNextSponsorsPayoutInCents: number;
+  //estimatedNextSponsorsPayoutInCents: number;
   followers?: { totalCount: number };
   hasSponsorsListing: boolean;
   id: string;
@@ -37,5 +39,17 @@ export type SearchUsersResponse = {
     totalCount: number;
     pageInfo: PageInfoForward;
     items: User[];
+    retrievedCount: number;
+    filteredCount: number;
   };
 };
+
+export const searchUsersParamsSchema = z.object({
+  query: z.string().optional(),
+  hasWebsiteUrl: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
+  extended: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
+
+  limit: z.coerce.number().min(1).max(100).default(10),
+  cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
+});
+export type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;

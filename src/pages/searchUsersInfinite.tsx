@@ -2,30 +2,13 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
 import { useInView } from "react-intersection-observer";
-import { z } from "zod";
 
 import UserInfo from "~/components/UserInfo";
 import { Button, toast } from "~/components/core";
 import { Spinner } from "~/components/core/Spinner";
 import { Checkbox, Form, Input, ValidationSummary, useForm } from "~/components/forms";
-import type { User } from "~/lib/schemas/ghUser.schema";
+import { type SearchUsersParamsInput, searchUsersParamsSchema } from "~/lib/schemas/ghUser.schema";
 import { api } from "~/utils/api";
-
-/** Apart from query, filters are applied on the results returned from the server. This allows to use the built-in paging functionality on GitHub as is. */
-const searchUsersParamsSchema = z.object({
-  query: z.string().optional(),
-  hasWebsiteUrl: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
-  extended: z.union([z.boolean(), z.string().transform((val) => val === "true")]).optional(),
-});
-type SearchUsersParamsInput = z.infer<typeof searchUsersParamsSchema>;
-
-const filterItems = (items: User[], filters: SearchUsersParamsInput): User[] => {
-  return items.filter((user) => {
-    if (Object.keys(user).length == 0) return false;
-    if (filters.hasWebsiteUrl && !user.websiteUrl) return false;
-    return true;
-  });
-};
 
 export default function Example() {
   const { ref, inView } = useInView();
@@ -69,9 +52,8 @@ export default function Example() {
     isLoading,
   } = api.github.searchUsersInfinite.useInfiniteQuery(
     {
+      ...filters,
       limit: 10,
-      query: query as string,
-      extended: filters.extended,
     },
     {
       enabled,
@@ -91,12 +73,12 @@ export default function Example() {
     }
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (inView && hasNextPage) {
       console.log("fetchNextPage");
       fetchNextPage({});
     }
-  }, [inView, hasNextPage, fetchNextPage]);
+  }); //inView, hasNextPage, fetchNextPage
 
   const appendToQueryHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -162,7 +144,7 @@ export default function Example() {
           <UserInfo.Table>
             {data.pages.map((page) => (
               <React.Fragment key={page.pageInfo.endCursor}>
-                {filterItems(page.items, filters).map((user) => (
+                {page.items.map((user) => (
                   <UserInfo.Row key={user.id} {...user} />
                 ))}
               </React.Fragment>

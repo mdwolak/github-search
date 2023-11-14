@@ -15,7 +15,7 @@ query SearchUsers($q: String!, $perPage: Int!, $after: String, $extended: Boolea
         createdAt
         email
         # enterprises requires permission
-        estimatedNextSponsorsPayoutInCents
+        # estimatedNextSponsorsPayoutInCents # zero for now
         followers {
           totalCount
         }

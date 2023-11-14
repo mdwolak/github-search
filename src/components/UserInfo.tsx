@@ -25,7 +25,7 @@ const Row: React.FC<User> = ({
   company,
   createdAt,
   email,
-  //estimatedNextSponsorsPayoutInCents, zero for now
+  //estimatedNextSponsorsPayoutInCents
   followers,
   hasSponsorsListing,
   id,
