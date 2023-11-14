@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { useInView } from "react-intersection-observer";
 
@@ -80,6 +80,16 @@ export default function Example() {
     }
   }); //inView, hasNextPage, fetchNextPage
 
+  const [filteredCount, retrievedCount] = useMemo(() => {
+    let filteredCount = 0;
+    let retrievedCount = 0;
+    data?.pages.forEach((page) => {
+      filteredCount += page.filteredCount;
+      retrievedCount += page.retrievedCount;
+    });
+    return [filteredCount, retrievedCount];
+  }, [data]);
+
   const appendToQueryHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const target = e.currentTarget;
@@ -114,9 +124,9 @@ export default function Example() {
                 {"repos:>10"}
               </Button>
             </div>
-            Client-side filters:
+            Filters:
             <Checkbox label="Has Website" {...form.register("hasWebsiteUrl")} />
-            Server-side filters:
+            Options:
             <Checkbox label="Extended" {...form.register("extended")} />
           </fieldset>
           <div className="flex py-7">
@@ -131,6 +141,12 @@ export default function Example() {
         </div>
       </Form>
       <div className="py-2">{data?.pages && `Found : ${data.pages[0]?.totalCount} users`}</div>
+      <div className="py-2">
+        {retrievedCount > 0 &&
+          `Showing ${filteredCount} out of ${retrievedCount} retrieved results (${Math.round(
+            (filteredCount / retrievedCount) * 100
+          )}%).`}
+      </div>
       {!enabled ? (
         <div></div>
       ) : status === "loading" ? (
@@ -158,7 +174,7 @@ export default function Example() {
               {isFetchingNextPage
                 ? "Loading more..."
                 : hasNextPage
-                ? "Load Newer"
+                ? "Load more"
                 : "Nothing more to load"}
             </button>
           </div>
