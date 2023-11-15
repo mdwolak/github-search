@@ -16,7 +16,6 @@ export default function Example() {
 
   const filters = searchUsersParamsSchema.parse(router.query);
   const query = filters.query;
-  console.log("router", filters.hasWebsiteUrl);
 
   const form = useForm({
     schema: searchUsersParamsSchema,
@@ -24,7 +23,7 @@ export default function Example() {
   const { setFocus, reset } = form;
 
   useEffect(() => {
-    console.log("filters", filters);
+    //console.log("filters", filters);
     reset({ ...filters });
     setFocus("query");
   }, [query, reset, setFocus]);
@@ -32,10 +31,9 @@ export default function Example() {
   const enabled = Boolean(query);
 
   const handleSearch = (data: SearchUsersParamsInput) => {
-    console.log(data);
+    //console.log(data);
     router.push({
       query: {
-        ...router.query,
         ...data,
       },
     });
@@ -62,12 +60,12 @@ export default function Example() {
         return lastPage.pageInfo.hasNextPage ? lastPage.pageInfo.endCursor : undefined;
       },
       onSuccess(data) {
-        console.log(data);
+        //console.log(data);
       },
       onError(error) {
         toast.error(error.message);
       },
-      staleTime: 60 * 60 * 1000,
+      //staleTime: 60 * 60 * 1000,
       retry: false, //managed by octokit
       refetchOnWindowFocus: false,
     }
@@ -75,10 +73,10 @@ export default function Example() {
 
   useEffect(() => {
     if (inView && hasNextPage) {
-      console.log("fetchNextPage");
+      //console.log("fetchNextPage");
       fetchNextPage({});
     }
-  }); //inView, hasNextPage, fetchNextPage
+  });
 
   const [filteredCount, retrievedCount] = useMemo(() => {
     let filteredCount = 0;
@@ -123,9 +121,47 @@ export default function Example() {
               <Button className="linkButton" onClick={appendToQueryHandler}>
                 {"repos:>10"}
               </Button>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
+                {"followers:>10"}
+              </Button>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
+                {"created:>2016-01-01"}
+              </Button>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
+                {"is:sponsorable"}
+              </Button>
+              <Button className="linkButton" onClick={appendToQueryHandler}>
+                {"data in:email|login|fullname"}
+              </Button>
             </div>
             Filters:
-            <Checkbox label="Has Website" {...form.register("hasWebsiteUrl")} />
+            <div className="flex flex-wrap gap-3">
+              <Checkbox
+                label="Has Website"
+                {...form.register("hasWebsiteUrl")}
+                style={{ display: "inline-block" }}
+              />
+              <Checkbox
+                label="Contactable"
+                {...form.register("isContactable")}
+                style={{ display: "inline-block" }}
+              />
+              <Checkbox
+                label="Hireable"
+                {...form.register("isHireable")}
+                style={{ display: "inline-block" }}
+              />
+              <Checkbox
+                label="No Company"
+                {...form.register("noCompany")}
+                style={{ display: "inline-block" }}
+              />
+              <Checkbox
+                label="Active in last 2 months"
+                {...form.register("recentlyActive")}
+                style={{ display: "inline-block" }}
+              />
+            </div>
             Options:
             <Checkbox label="Extended" {...form.register("extended")} />
           </fieldset>

@@ -69,7 +69,6 @@ const Row: React.FC<User> = ({
           />
         </Link>
       </td>
-      <td>{ext.isContactable && "yes"}</td>
       <td>
         <div className="flex flex-row gap-1.5">
           <span className="text-sm font-medium">{name} </span>
@@ -82,7 +81,9 @@ const Row: React.FC<User> = ({
         {ext.companyHtml && (
           <p className="text-gray-300" dangerouslySetInnerHTML={{ __html: ext.companyHtml }}></p>
         )}
-        {ext.bioHtml && <p className="text-gray-500">{ext.bioHtml}</p>}
+        {ext.bioHtml && (
+          <p className="text-gray-500" dangerouslySetInnerHTML={{ __html: ext.bioHtml }}></p>
+        )}
         {status?.message && <p className="text-gray-500">Status: {status?.message}</p>}
       </td>
     </tr>

@@ -12,6 +12,11 @@ export const requiredStringCleaned = requiredString.transform(cleanString);
 
 export const optionalStringCleaned = z.string().transform(cleanString);
 
+export const booleanOrString = z.union([
+  z.boolean(),
+  z.string().transform((val) => val === "true"),
+]);
+
 export const filterQuery = z.object({
   limit: z.number().default(10),
   page: z.number().default(1),

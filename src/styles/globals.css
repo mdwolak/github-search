@@ -28,3 +28,7 @@
 .linkButton {
   @apply bg-transparent text-xs text-blue-500 outline-none focus:outline-none;
 }
+
+mark {
+  @apply bg-yellow-200;
+}

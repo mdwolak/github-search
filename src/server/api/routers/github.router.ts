@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { SearchUsersFilterParamsInput } from "~/lib/schemas/github.schema";
 import { type SearchUsersParamsInput, searchUsersParamsSchema } from "~/lib/schemas/github.schema";
 import { publicProcedure, router } from "~/server/api/trpc";
 import { searchUsersQuery } from "~/server/graphql/SearchUsers";
@@ -22,6 +23,7 @@ const devMode = false;
  * @see https://github.com/octokit/octokit.js#graphql-api-queries
  * @see https://docs.github.com/en/graphql/reference/objects#user
  * @see https://github.com/octokit/plugin-paginate-graphql.js
+ * @see https://docs.github.com/en/search-github/searching-on-github/searching-users
  *
  * To get all results use pagination. Example:
  * const { allItems } = await octokit.graphql.paginate(query, variables);
@@ -123,10 +125,10 @@ function mapGitHubUser(user: GitHubUser) {
   const isContactable = !!user.email || user.socialAccounts.totalCount > 0 || !!user.websiteUrl;
 
   // Highlight hireable keywords in the bio using <strong> tags
-  const bioHtml = user.bio?.replace(HIREABLE_KEYWORDS, "<strong>$1</strong>");
+  const bioHtml = user.bio?.replace(HIREABLE_KEYWORDS, "<mark>$1</mark>");
 
   // Check if the bio contains any hireable keywords
-  const hireableKeywords = bioHtml !== user.bio;
+  const hireableKeywords = user.bio && user.bio !== bioHtml;
   const isHireable = user.isHireable || user.hasSponsorsListing || hireableKeywords;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -144,10 +146,14 @@ function mapGitHubUser(user: GitHubUser) {
   };
 }
 
-const getSearchUsersFilter = (filters: SearchUsersParamsInput) => {
+const getSearchUsersFilter = (filters: SearchUsersFilterParamsInput) => {
   return (user: ReturnType<typeof mapGitHubUser>) => {
-    if (Object.keys(user).length == 0) return false;
     if (filters.hasWebsiteUrl && !user.websiteUrl) return false;
+    if (filters.isContactable && !user.extendedAttributes.isContactable) return false;
+    if (filters.isHireable && !user.extendedAttributes.isHireable) return false;
+    if (filters.noCompany && user.extendedAttributes.companyHtml) return false;
+    if (filters.recentlyActive && user.extendedAttributes.activityIndex > 2) return false;
+
     return true;
   };
 };
