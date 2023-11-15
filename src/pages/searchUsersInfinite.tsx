@@ -11,6 +11,7 @@ import { type SearchUsersParamsInput, searchUsersParamsSchema } from "~/lib/sche
 import { api } from "~/utils/api";
 
 export default function Example() {
+  const apiContext = api.useContext();
   const { ref, inView } = useInView();
   const router = useRouter();
 
@@ -213,6 +214,13 @@ export default function Example() {
                 ? "Load more"
                 : "Nothing more to load"}
             </button>
+            {isFetchingNextPage && (
+              <Button
+                className="linkButton"
+                onClick={() => apiContext.github.searchUsersInfinite.cancel()}>
+                Cancel
+              </Button>
+            )}
           </div>
           <div>{isFetching && !isFetchingNextPage ? "Background Updating..." : null}</div>
         </>
